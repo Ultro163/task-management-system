@@ -1,0 +1,29 @@
+services:
+
+  task-management-system-guide:
+    image: task-management-system-guide
+    build: .
+    container_name: task-management-system-guide
+    ports:
+      - "8080:8080"
+    depends_on:
+      - tms_db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://tms_db:5432/tms_db
+      - SPRING_DATASOURCE_USERNAME=ultro
+      - SPRING_DATASOURCE_PASSWORD=163163
+
+  tms_db:
+    image: postgres:16.1
+    container_name: tms_db
+    ports:
+      - "5433:5432"
+    environment:
+      - POSTGRES_PASSWORD=163163
+      - POSTGRES_USER=ultro
+      - POSTGRES_DB=tms_db
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
