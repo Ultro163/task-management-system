@@ -1,23 +1,26 @@
 package com.example.service;
 
+import com.example.dto.task.NewTaskDto;
+import com.example.dto.task.ShortTaskDto;
+import com.example.dto.task.TaskDto;
 import com.example.model.Task;
 
 import java.util.List;
 
 public interface TaskService {
-    Task createTask(Task task);
+    ShortTaskDto createTask(NewTaskDto newTask);
 
-    Task getTaskById(long id);
+    ShortTaskDto getTaskById(long id);
 
-    Task getUserTaskById(long userId, long taskId);
+    ShortTaskDto getUserTaskById(long userId, long taskId);
 
-    Task updateTaskByUser(long userId, Task task);
+    ShortTaskDto updateTaskByUser(long userId, ShortTaskDto task);
 
-    Task updateTaskByAdmin(Task task);
+    ShortTaskDto updateTaskByAdmin(ShortTaskDto task);
 
     void deleteTaskByAdmin(long id);
 
-    List<Task> getAuthorTasks(long authorId, int page, int size, String title);
+    List<TaskDto> getAuthorTasks(long authorId, int page, int size, String title);
 
-    List<Task> getTasksForExecutor(long executorId, int page, int size, String title);
+    List<TaskDto> getTasksForExecutor(long executorId, int page, int size, String title);
 }

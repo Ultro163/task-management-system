@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
@@ -31,4 +32,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             AND t.title ILIKE COALESCE(CONCAT('%', :title, '%'), '%')
             """)
     List<Task> findAllByExecutorId(@Param("executorId") long authorId, @Param("title") String title, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"author", "executor", "comments"})
+    @Query("""
+            select t
+            from Task as t
+            LEFT JOIN FETCH t.comments
+            where t.id = :taskId
+            """)
+    Optional<Task> findByIdForAdmin(@Param("taskId") long taskId);
 }

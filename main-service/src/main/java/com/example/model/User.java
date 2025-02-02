@@ -13,6 +13,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @Getter
@@ -20,7 +21,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "users")
 @ToString
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

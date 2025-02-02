@@ -1,4 +1,4 @@
-package com.example.config;
+package com.example.config.kafka;
 
 import org.apache.kafka.clients.admin.NewTopic;
 import org.springframework.context.annotation.Bean;

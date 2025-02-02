@@ -1,4 +1,4 @@
-package com.example.security;
+package com.example.error.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

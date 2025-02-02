@@ -20,7 +20,7 @@ import java.util.Objects;
 @Transactional
 public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
-    private final TaskService taskServiceImpl;
+    private final TaskReadService taskReadServiceImpl;
 
     /**
      * Создает комментарий исполнителя.
@@ -32,7 +32,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment createExecutorComment(Comment comment) {
         log.info("Create executor comment {}", comment);
-        Task task = taskServiceImpl.getTaskById(comment.getTask().getId());
+        Task task = taskReadServiceImpl.getTaskById(comment.getTask().getId());
         if (!Objects.equals(task.getExecutor().getId(), comment.getAuthor().getId())) {
             throw new AccessDeniedException("You can't leave a comment on this task.");
         }
@@ -50,7 +50,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment createAdminComment(Comment comment) {
         log.info("Create admin comment {}", comment);
-        taskServiceImpl.getTaskById(comment.getTask().getId());
+        taskReadServiceImpl.getTaskById(comment.getTask().getId());
         Comment result = commentRepository.save(comment);
         log.info("Created admin comment {}", comment);
         return result;

@@ -115,4 +115,20 @@ public class ErrorHandler {
                 .timestamp(LocalDateTime.now())
                 .build();
     }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiError handleAllUnhandledExceptions(final Exception e) {
+        log.error("Unexpected server error: ", e);
+        List<String> errors = new ArrayList<>();
+        errors.add(e.getMessage());
+        return ApiError.builder()
+                .errors(errors)
+                .message("An unexpected internal server error occurred")
+                .reason("InternalServerError")
+                .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
+                .timestamp(LocalDateTime.now())
+                .build();
+    }
+
 }

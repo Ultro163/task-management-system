@@ -1,5 +1,6 @@
 package com.example.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,6 +18,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,7 +28,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "tasks")
 @ToString
-public class Task {
+public class Task implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -57,6 +59,7 @@ public class Task {
     private User executor;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "task")
+    @JsonManagedReference
     private List<Comment> comments = new ArrayList<>();
 
 

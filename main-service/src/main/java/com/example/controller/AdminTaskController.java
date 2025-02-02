@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,28 +34,24 @@ import java.util.List;
 @SecurityRequirement(name = "Bearer Authentication")
 public class AdminTaskController {
     private final TaskService taskServiceImpl;
-    private final TaskMapper taskMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Создать задачу", description = "Создает новую задачу на основе переданных данных")
-
-    public TaskDto createTask(@RequestBody NewTaskDto dto) {
-        Task task = taskMapper.toEntity(dto);
-        return taskMapper.toTaskDto(taskServiceImpl.createTask(task));
+    public ShortTaskDto createTask(@RequestBody NewTaskDto dto) {
+        return taskServiceImpl.createTask(dto);
     }
 
     @GetMapping("/{taskId}")
     @Operation(summary = "Получить задачу по ID", description = "Возвращает краткую информацию о задаче по её идентификатору")
     public ShortTaskDto getTaskById(@PathVariable long taskId) {
-        return taskMapper.toShortTaskDto(taskServiceImpl.getTaskById(taskId));
+        return taskServiceImpl.getTaskById(taskId);
     }
 
     @PatchMapping
     @Operation(summary = "Обновить задачу", description = "Обновляет информацию о задаче на основе переданных данных")
     public ShortTaskDto updateTask(@RequestBody ShortTaskDto dto) {
-        Task task = taskMapper.toEntity(dto);
-        return taskMapper.toShortTaskDto(taskServiceImpl.updateTaskByAdmin(task));
+        return taskServiceImpl.updateTaskByAdmin(dto);
     }
 
     @DeleteMapping("/{taskId}")
@@ -70,8 +67,7 @@ public class AdminTaskController {
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size,
                                         @RequestParam(required = false) String title) {
-        return taskServiceImpl.getAuthorTasks(authorId, page, size, title).stream()
-                .map(taskMapper::toTaskDto).toList();
+        return taskServiceImpl.getAuthorTasks(authorId, page, size, title);
     }
 
     @GetMapping("/executor")
@@ -80,7 +76,6 @@ public class AdminTaskController {
                                              @RequestParam int page,
                                              @RequestParam int size,
                                              @RequestParam(required = false) String title) {
-        return taskServiceImpl.getTasksForExecutor(executorId, page, size, title).stream()
-                .map(taskMapper::toTaskDto).toList();
+        return taskServiceImpl.getTasksForExecutor(executorId, page, size, title);
     }
 }

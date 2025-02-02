@@ -1,7 +1,6 @@
 package com.example.security;
 
 import com.example.dto.jwt.JwtAuthenticationResponse;
-import com.example.dto.mappers.UserMapper;
 import com.example.model.Role;
 import com.example.model.User;
 import com.example.service.CustomUserDetailsService;
@@ -9,7 +8,6 @@ import com.example.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -19,9 +17,7 @@ public class AuthenticationService {
     private final CustomUserDetailsService userService;
     private final UserService userServiceImpl;
     private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
-    private final UserMapper personMapper;
 
     /**
      * Регистрация пользователя

@@ -1,6 +1,6 @@
 package com.example.config;
 
-import com.example.security.RestAuthenticationEntryPoint;
+import com.example.error.controller.RestAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -53,10 +53,10 @@ public class SecurityConfig {
                     return corsConfiguration;
                 }))
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**",
-                                "/auth/sign-up", "/auth/sign-in").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/auth/sign-up", "/auth/sign-in").permitAll()
                         .requestMatchers("/user/tasks/**", "/comment/user").hasRole("USER")
                         .requestMatchers("/admin/**", "/comment/admin").hasRole("ADMIN")
+                        .requestMatchers("/kafka").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))

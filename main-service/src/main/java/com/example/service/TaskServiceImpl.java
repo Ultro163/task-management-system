@@ -1,10 +1,16 @@
 package com.example.service;
 
+import com.example.dto.mappers.TaskMapper;
+import com.example.dto.task.NewTaskDto;
+import com.example.dto.task.ShortTaskDto;
+import com.example.dto.task.TaskDto;
 import com.example.error.exception.EntityNotFoundException;
 import com.example.model.Task;
 import com.example.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,6 +31,8 @@ import java.util.Optional;
 public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserService userServiceImpl;
+    private final TaskReadService taskReadServiceImpl;
+    private final TaskMapper taskMapper;
 
     /**
      * Создает новую задачу.
@@ -33,12 +41,13 @@ public class TaskServiceImpl implements TaskService {
      * @return созданная задача.
      */
     @Override
-    public Task createTask(Task task) {
-        log.info("Create task: {}", task);
-        userServiceImpl.getById(task.getExecutor().getId());
+    public ShortTaskDto createTask(NewTaskDto newTask) {
+        log.info("Create task: {}", newTask);
+        userServiceImpl.getById(newTask.getExecutorId());
+        Task task = taskMapper.toEntity(newTask);
         Task result = taskRepository.save(task);
         log.info("Task created: {}", result);
-        return result;
+        return taskMapper.toShortTaskDto(result);
     }
 
     /**
@@ -50,30 +59,32 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     @Transactional(readOnly = true)
-    public Task getTaskById(long id) {
+    @Cacheable(value = "tasks", key = "#id")
+    public ShortTaskDto getTaskById(long id) {
         log.info("Getting task with ID={}", id);
-        return taskRepository.findById(id).orElseThrow(() -> {
+        return taskMapper.toShortTaskDto(taskRepository.findByIdForAdmin(id).orElseThrow(() -> {
             log.warn("Task not found with ID {}", id);
             return new EntityNotFoundException("Task with ID=" + id + " not found");
-        });
+        }));
     }
 
     /**
      * Получает задачу пользователя по ID задачи и ID автора.
      *
-     * @param userId  ID пользователя.
-     * @param taskId  ID задачи.
+     * @param userId ID пользователя.
+     * @param taskId ID задачи.
      * @return найденная задача.
      * @throws AccessDeniedException если пользователь не является автором задачи.
      */
     @Override
     @Transactional(readOnly = true)
-    public Task getUserTaskById(long userId, long taskId) {
-        Task task = getTaskById(taskId);
+    @Cacheable(value = "tasks", key = "#taskId")
+    public ShortTaskDto getUserTaskById(long userId, long taskId) {
+        Task task = taskReadServiceImpl.getTaskById(taskId);
         if (task.getAuthor().getId() != userId) {
             throw new AccessDeniedException("You do not have permission to access this task");
         }
-        return task;
+        return taskMapper.toShortTaskDto(task);
     }
 
     /**
@@ -85,20 +96,21 @@ public class TaskServiceImpl implements TaskService {
      * @throws AccessDeniedException если пользователь не имеет прав на обновление.
      */
     @Override
-    public Task updateTaskByUser(long userId, Task task) {
+    @CacheEvict(value = "tasks", key = "#task.id")
+    public ShortTaskDto updateTaskByUser(long userId, ShortTaskDto task) {
         log.info("Update task by user: {}", task);
-        Task saveTask = getTaskById(task.getId());
-        if (task.getExecutor().getId() == userId) {
+        Task saveTask = taskReadServiceImpl.getTaskById(task.getId());
+        if (task.getExecutorId() == userId) {
             Optional.ofNullable(task.getState()).ifPresent(saveTask::setState);
             Task result = taskRepository.save(saveTask);
             log.info("Updated task by executor: {}", result);
-            return result;
+            return taskMapper.toShortTaskDto(result);
         } else {
-            if (task.getAuthor().getId() == userId) {
+            if (task.getAuthorId() == userId) {
                 log.warn("User with ID={} do not have permission to update this task", userId);
                 throw new AccessDeniedException("You do not have permission to update this task");
             }
-            return updateFullTask(task, saveTask);
+            return taskMapper.toShortTaskDto(updateFullTask(task, saveTask));
         }
     }
 
@@ -109,10 +121,11 @@ public class TaskServiceImpl implements TaskService {
      * @return обновленная задача.
      */
     @Override
-    public Task updateTaskByAdmin(Task task) {
+    @CacheEvict(value = "tasks", key = "#task.id")
+    public ShortTaskDto updateTaskByAdmin(ShortTaskDto task) {
         log.info("Update task by admin: {}", task);
-        Task saveTask = getTaskById(task.getId());
-        return updateFullTask(task, saveTask);
+        Task saveTask = taskReadServiceImpl.getTaskById(task.getId());
+        return taskMapper.toShortTaskDto(updateFullTask(task, saveTask));
     }
 
     /**
@@ -122,7 +135,7 @@ public class TaskServiceImpl implements TaskService {
      * @param saveTask существующая задача.
      * @return обновленная задача.
      */
-    private Task updateFullTask(Task task, Task saveTask) {
+    private Task updateFullTask(ShortTaskDto task, Task saveTask) {
         if (task.getTitle() != null) {
             saveTask.setTitle(task.getTitle());
         }
@@ -135,8 +148,8 @@ public class TaskServiceImpl implements TaskService {
         if (task.getPriority() != null) {
             saveTask.setPriority(task.getPriority());
         }
-        if (task.getExecutor() != null) {
-            saveTask.setExecutor(task.getExecutor());
+        if (task.getExecutorId() != null) {
+            saveTask.getExecutor().setId(task.getExecutorId());
         }
         Task result = taskRepository.save(saveTask);
         log.info("Updated task by author: {}", result);
@@ -149,6 +162,7 @@ public class TaskServiceImpl implements TaskService {
      * @param id идентификатор задачи.
      */
     @Override
+    @CacheEvict(value = "tasks", key = "#id")
     public void deleteTaskByAdmin(long id) {
         log.info("Delete task with ID={}", id);
         taskRepository.existsById(id);
@@ -167,9 +181,11 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Task> getAuthorTasks(long authorId, int page, int size, String title) {
+    @Cacheable(value = "tasks", key = "#authorId + '-' + #title + '-' + #page + '-' + #size")
+    public List<TaskDto> getAuthorTasks(long authorId, int page, int size, String title) {
         Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
-        return taskRepository.findAllByAuthorId(authorId, title, pageable);
+        return taskRepository.findAllByAuthorId(authorId, title, pageable).stream()
+                .map(taskMapper::toTaskDto).toList();
     }
 
     /**
@@ -183,8 +199,9 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<Task> getTasksForExecutor(long executorId, int page, int size, String title) {
+    public List<TaskDto> getTasksForExecutor(long executorId, int page, int size, String title) {
         Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
-        return taskRepository.findAllByExecutorId(executorId, title, pageable);
+        return taskRepository.findAllByExecutorId(executorId, title, pageable).stream()
+                .map(taskMapper::toTaskDto).toList();
     }
 }

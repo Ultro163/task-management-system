@@ -32,7 +32,6 @@ import java.util.List;
 @SecurityRequirement(name = "Bearer Authentication")
 public class UserTaskController {
     private final TaskService taskServiceImpl;
-    private final TaskMapper taskMapper;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,8 +40,7 @@ public class UserTaskController {
             description = "Создает новую задачу для пользователя."
     )
     public ShortTaskDto createTask(@RequestBody NewTaskDto dto) {
-        Task task = taskMapper.toEntity(dto);
-        return taskMapper.toShortTaskDto(taskServiceImpl.createTask(task));
+        return taskServiceImpl.createTask(dto);
     }
 
     @GetMapping("/{taskId}")
@@ -51,7 +49,7 @@ public class UserTaskController {
             description = "Возвращает задачу пользователя по её идентификатору."
     )
     public ShortTaskDto getTaskByUserId(@RequestParam long userId, @PathVariable long taskId) {
-        return taskMapper.toShortTaskDto(taskServiceImpl.getUserTaskById(userId, taskId));
+        return taskServiceImpl.getUserTaskById(userId, taskId);
     }
 
     @PatchMapping
@@ -60,8 +58,7 @@ public class UserTaskController {
             description = "Обновляет информацию о задаче пользователя."
     )
     public ShortTaskDto updateTask(@RequestParam long userId, @RequestBody ShortTaskDto dto) {
-        Task task = taskMapper.toEntity(dto);
-        return taskMapper.toShortTaskDto(taskServiceImpl.updateTaskByUser(userId, task));
+        return taskServiceImpl.updateTaskByUser(userId, dto);
     }
 
     @GetMapping("/author")
@@ -74,8 +71,7 @@ public class UserTaskController {
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size,
                                         @RequestParam(required = false) String title) {
-        return taskServiceImpl.getAuthorTasks(authorId, page, size, title).stream()
-                .map(taskMapper::toTaskDto).toList();
+        return taskServiceImpl.getAuthorTasks(authorId, page, size, title);
     }
 
     @GetMapping("/executor")
@@ -87,7 +83,6 @@ public class UserTaskController {
                                              @RequestParam int page,
                                              @RequestParam int size,
                                              @RequestParam(required = false) String title) {
-        return taskServiceImpl.getTasksForExecutor(executorId, page, size, title).stream()
-                .map(taskMapper::toTaskDto).toList();
+        return taskServiceImpl.getTasksForExecutor(executorId, page, size, title);
     }
 }
