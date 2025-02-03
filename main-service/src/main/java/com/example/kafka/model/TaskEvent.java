@@ -1,5 +1,7 @@
-package com.example.model;
+package com.example.kafka.model;
 
+import com.example.model.Priority;
+import com.example.model.TaskState;
 import lombok.Data;
 
 import java.io.Serializable;

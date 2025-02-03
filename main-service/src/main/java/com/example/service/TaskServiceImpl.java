@@ -1,12 +1,13 @@
 package com.example.service;
 
-import com.example.dto.mappers.TaskMapper;
+import com.example.dto.TaskMapper;
 import com.example.dto.task.NewTaskDto;
 import com.example.dto.task.ShortTaskDto;
 import com.example.dto.task.TaskDto;
 import com.example.error.exception.EntityNotFoundException;
+import com.example.kafka.model.TaskEvent;
+import com.example.kafka.service.KafkaSender;
 import com.example.model.Task;
-import com.example.model.TaskEvent;
 import com.example.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +41,7 @@ public class TaskServiceImpl implements TaskService {
     /**
      * Создает новую задачу.
      *
-     * @param task задача для создания.
+     * @param newTask задача для создания.
      * @return созданная задача.
      */
     @Override
@@ -54,8 +55,6 @@ public class TaskServiceImpl implements TaskService {
         taskEvent.setCompletedAt(LocalDateTime.now());
         taskEvent.setUpdatedAt(LocalDateTime.now());
         log.info("----------------------------------------{}", taskEvent);
-        kafkaSender.sendTaskEvent("topic-1", taskEvent);
-
         Task result = taskRepository.save(task);
         taskEvent.setTaskId(result.getId());
         kafkaSender.sendTaskEvent("topic-1", taskEvent);

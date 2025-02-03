@@ -3,7 +3,6 @@ package com.example.service;
 import com.example.dto.task.NewTaskDto;
 import com.example.dto.task.ShortTaskDto;
 import com.example.dto.task.TaskDto;
-import com.example.model.Task;
 
 import java.util.List;
 

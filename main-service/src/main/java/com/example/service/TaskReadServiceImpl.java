@@ -1,7 +1,5 @@
 package com.example.service;
 
-import com.example.dto.mappers.TaskMapper;
-import com.example.dto.task.ShortTaskDto;
 import com.example.error.exception.EntityNotFoundException;
 import com.example.model.Task;
 import com.example.repository.TaskRepository;

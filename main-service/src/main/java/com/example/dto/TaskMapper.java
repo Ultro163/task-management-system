@@ -1,4 +1,4 @@
-package com.example.dto.mappers;
+package com.example.dto;
 
 import com.example.dto.comment.CommentDto;
 import com.example.dto.comment.NewCommentDto;
@@ -6,9 +6,9 @@ import com.example.dto.task.NewTaskDto;
 import com.example.dto.task.ShortTaskDto;
 import com.example.dto.task.TaskDto;
 import com.example.dto.task.TaskDtoForComment;
+import com.example.kafka.model.TaskEvent;
 import com.example.model.Comment;
 import com.example.model.Task;
-import com.example.model.TaskEvent;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;

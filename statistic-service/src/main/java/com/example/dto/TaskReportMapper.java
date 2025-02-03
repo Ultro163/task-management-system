@@ -1,7 +1,8 @@
-package com.example.dto.mappers;
+package com.example.dto;
 
-import com.example.dto.TaskEvent;
+import com.example.kafka.model.TaskEvent;
 import com.example.model.TaskReport;
+import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
@@ -14,4 +15,9 @@ public interface TaskReportMapper {
 
     @Mapping(source = "id", target = "taskId")
     TaskEvent toTaskEvent(TaskReport taskReport);
+
+    TaskReport toEntity(TaskReportDto taskReportDto);
+
+    @InheritInverseConfiguration(name = "toEntity")
+    TaskReportDto toTaskReportDto(TaskReport taskReport);
 }

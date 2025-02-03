@@ -1,4 +1,4 @@
-package com.example.dto;
+package com.example.kafka.model;
 
 import com.example.model.Priority;
 import com.example.model.TaskReport;

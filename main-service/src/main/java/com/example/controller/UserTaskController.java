@@ -1,10 +1,8 @@
 package com.example.controller;
 
-import com.example.dto.mappers.TaskMapper;
 import com.example.dto.task.NewTaskDto;
 import com.example.dto.task.ShortTaskDto;
 import com.example.dto.task.TaskDto;
-import com.example.model.Task;
 import com.example.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
