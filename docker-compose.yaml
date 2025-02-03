@@ -1,19 +1,19 @@
 services:
-  task-management-system:
-    image: main-service
-    build: main-service
-    container_name: main-service_tms
-    ports:
-      - "8080:8080"
-    depends_on:
-      - tms_db
-      - redis
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://tms_db:5432/tms_db
-      - SPRING_DATASOURCE_USERNAME=ultro
-      - SPRING_DATASOURCE_PASSWORD=163163
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-      - REDIS_HOST=redis
+#  task-management-system:
+#    image: main-service
+#    build: main-service
+#    container_name: main-service_tms
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - tms_db
+#      - redis
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://tms_db:5432/tms_db
+#      - SPRING_DATASOURCE_USERNAME=ultro
+#      - SPRING_DATASOURCE_PASSWORD=163163
+#      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+#      - REDIS_HOST=redis
 
   tms_db:
     image: postgres:16.1

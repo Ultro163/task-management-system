@@ -8,6 +8,7 @@ import com.example.dto.task.TaskDto;
 import com.example.dto.task.TaskDtoForComment;
 import com.example.model.Comment;
 import com.example.model.Task;
+import com.example.model.TaskEvent;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.InheritInverseConfiguration;
 import org.mapstruct.Mapper;
@@ -47,4 +48,9 @@ public interface TaskMapper {
     @Mapping(source = "taskId", target = "task.id")
     @Mapping(source = "authorId", target = "author.id")
     Comment toEntity(NewCommentDto newCommentDto);
+
+    @Mapping(source = "task.id", target = "taskId")
+    @Mapping(source = "executor.id", target = "executorId")
+    @Mapping(source = "author.id", target = "authorId")
+    TaskEvent toTaskEvent(Task task);
 }

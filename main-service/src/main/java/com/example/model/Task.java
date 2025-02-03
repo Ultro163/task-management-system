@@ -19,6 +19,7 @@ import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -57,6 +58,9 @@ public class Task implements Serializable {
     @JoinColumn(name = "executor_id", nullable = false)
     @ToString.Exclude
     private User executor;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "task")
     @JsonManagedReference

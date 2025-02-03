@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.model.TaskEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -10,12 +11,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class KafkaSender {
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, TaskEvent> taskKafkaTemplate;
 
-    public void sendMessage(String message, String topicName) {
-        log.info("Sending : {}", message);
+    public void sendTaskEvent(String topicName, TaskEvent taskEvent) {
+        log.info("Sending : {}", taskEvent);
         log.info("--------------------------------");
 
-        kafkaTemplate.send(topicName, message);
+        taskKafkaTemplate.send(topicName, taskEvent);
     }
 }

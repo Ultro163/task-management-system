@@ -15,7 +15,7 @@
     <version>0.0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
     <modules>
-        <module>notification-service</module>
+        <module>statistic-service</module>
         <module>main-service</module>
     </modules>
 

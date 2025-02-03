@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * DTO (Data Transfer Object) для представления информации о задаче, предназначенной для комментариев.
  * Это DTO используется для передачи основных данных о задаче, таких как заголовок, описание, состояние и приоритет.
@@ -39,4 +41,6 @@ public class TaskDtoForComment {
 
     @Schema(description = "Идентификатор исполнителя задачи", example = "456")
     private Long executorId;
+
+    private LocalDateTime createdAt;
 }

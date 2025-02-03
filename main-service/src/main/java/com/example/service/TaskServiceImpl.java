@@ -6,6 +6,7 @@ import com.example.dto.task.ShortTaskDto;
 import com.example.dto.task.TaskDto;
 import com.example.error.exception.EntityNotFoundException;
 import com.example.model.Task;
+import com.example.model.TaskEvent;
 import com.example.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +34,7 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserService userServiceImpl;
     private final TaskReadService taskReadServiceImpl;
+    private final KafkaSender kafkaSender;
     private final TaskMapper taskMapper;
 
     /**
@@ -45,7 +48,17 @@ public class TaskServiceImpl implements TaskService {
         log.info("Create task: {}", newTask);
         userServiceImpl.getById(newTask.getExecutorId());
         Task task = taskMapper.toEntity(newTask);
+        task.setCreatedAt(LocalDateTime.now());
+
+        TaskEvent taskEvent = taskMapper.toTaskEvent(task);
+        taskEvent.setCompletedAt(LocalDateTime.now());
+        taskEvent.setUpdatedAt(LocalDateTime.now());
+        log.info("----------------------------------------{}", taskEvent);
+        kafkaSender.sendTaskEvent("topic-1", taskEvent);
+
         Task result = taskRepository.save(task);
+        taskEvent.setTaskId(result.getId());
+        kafkaSender.sendTaskEvent("topic-1", taskEvent);
         log.info("Task created: {}", result);
         return taskMapper.toShortTaskDto(result);
     }

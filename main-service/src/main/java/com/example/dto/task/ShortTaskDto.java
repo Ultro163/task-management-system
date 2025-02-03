@@ -10,6 +10,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 /**
  * DTO (Data Transfer Object) для представления краткой информации о задаче.
  * Это DTO используется для передачи базовой информации о задаче.
@@ -42,4 +44,7 @@ public class ShortTaskDto {
 
     @Schema(description = "Идентификатор исполнителя задачи", example = "4")
     private Long executorId;
+
+    private LocalDateTime createdAt;
+
 }
