@@ -37,4 +37,14 @@ public class KafkaListenerExample {
         log.info("Received message [{}] in statistic from partition 1", taskEvent);
         taskReportServiceImp.update(taskEvent);
     }
+
+    @KafkaListener(
+            topicPartitions = @TopicPartition(topic = "STATISTIC-TOPIC", partitions = {"2"}),
+            groupId = "statistic",
+            containerFactory = "kafkaListenerContainerFactory"
+    )
+    void listenerPartition2(@Payload Long taskId) {
+        log.info("Received message [{}] in statistic from partition 2", taskId);
+        taskReportServiceImp.delete(taskId);
+    }
 }

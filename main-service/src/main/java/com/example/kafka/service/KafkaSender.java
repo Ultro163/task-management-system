@@ -14,17 +14,23 @@ public class KafkaSender {
 
     private final KafkaTemplate<String, Object> taskKafkaTemplate;
 
-    public void sendTaskEventToPartition0(String topicName, TaskEvent taskEvent) {
+    public void sendNewTaskEvent(String topicName, TaskEvent taskEvent) {
         log.info("Sending to partition 0: {}", taskEvent);
 
-        ProducerRecord<String, Object> record = new ProducerRecord<>(topicName, 0, null, taskEvent);
-        taskKafkaTemplate.send(record);
+        ProducerRecord<String, Object> producerRecord = new ProducerRecord<>(topicName, 0, null, taskEvent);
+        taskKafkaTemplate.send(producerRecord);
     }
 
-    public void sendTaskEventToPartition1(String topicName, TaskEvent taskEvent) {
+    public void sendUpdatedTaskEvent(String topicName, TaskEvent taskEvent) {
         log.info("Sending to partition 1: {}", taskEvent);
 
-        ProducerRecord<String, Object> record = new ProducerRecord<>(topicName, 1, null, taskEvent);
-        taskKafkaTemplate.send(record);
+        ProducerRecord<String, Object> producerRecord = new ProducerRecord<>(topicName, 1, null, taskEvent);
+        taskKafkaTemplate.send(producerRecord);
+    }
+
+    public void sendDeletedTaskEvent(String topicName, Long taskId) {
+        log.info("Sending to partition 2: {}", taskId);
+        ProducerRecord<String, Object> producerRecord = new ProducerRecord<>(topicName, 2, null, taskId);
+        taskKafkaTemplate.send(producerRecord);
     }
 }

@@ -24,5 +24,5 @@ public class TaskEvent {
     private LocalDateTime updatedAt;
     private LocalDateTime completedAt;
     private Priority priority;
-    private TaskState status;
+    private TaskState state;
 }

@@ -7,7 +7,7 @@ package com.example.util;
  * Этот класс является утилитным, и его экземпляры не могут быть созданы.
  */
 public class Constants {
-    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String DATE_TIME_FORMAT = "YYYY-MM-dd HH:mm:ss";
 
     private Constants() {
         throw new IllegalStateException("Utility class");

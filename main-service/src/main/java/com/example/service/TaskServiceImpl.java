@@ -51,14 +51,11 @@ public class TaskServiceImpl implements TaskService {
         userServiceImpl.getById(newTask.getExecutorId());
         Task task = taskMapper.toEntity(newTask);
         task.setCreatedAt(LocalDateTime.now());
+        Task result = taskRepository.save(task);
 
         TaskEvent taskEvent = taskMapper.toTaskEvent(task);
-//        taskEvent.setCompletedAt(LocalDateTime.now());
-//        taskEvent.setUpdatedAt(LocalDateTime.now());
-
-        Task result = taskRepository.save(task);
         taskEvent.setTaskId(result.getId());
-        kafkaSender.sendTaskEventToPartition0("STATISTIC-TOPIC", taskEvent);
+        kafkaSender.sendNewTaskEvent("STATISTIC-TOPIC", taskEvent);
         log.info("Task created: {}", result);
         return taskMapper.toShortTaskDto(result);
     }
@@ -178,7 +175,7 @@ public class TaskServiceImpl implements TaskService {
             taskEvent.setCompletedAt(LocalDateTime.now());
         }
         taskEvent.setUpdatedAt(LocalDateTime.now());
-        kafkaSender.sendTaskEventToPartition1("STATISTIC-TOPIC", taskEvent);
+        kafkaSender.sendUpdatedTaskEvent("STATISTIC-TOPIC", taskEvent);
     }
 
     /**
@@ -192,6 +189,7 @@ public class TaskServiceImpl implements TaskService {
         log.info("Delete task with ID={}", id);
         taskRepository.existsById(id);
         taskRepository.deleteById(id);
+        kafkaSender.sendDeletedTaskEvent("STATISTIC-TOPIC", id);
         log.info("Deleted task with ID={}", id);
     }
 

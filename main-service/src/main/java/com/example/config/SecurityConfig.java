@@ -56,7 +56,6 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/auth/sign-up", "/auth/sign-in").permitAll()
                         .requestMatchers("/user/tasks/**", "/comment/user").hasRole("USER")
                         .requestMatchers("/admin/**", "/comment/admin").hasRole("ADMIN")
-                        .requestMatchers("/kafka").permitAll()
                         .anyRequest().authenticated())
                 .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
