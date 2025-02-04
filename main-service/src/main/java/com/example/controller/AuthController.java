@@ -1,7 +1,7 @@
 package com.example.controller;
 
-import com.example.dto.jwt.JwtAuthenticationResponse;
 import com.example.dto.UserMapper;
+import com.example.dto.jwt.JwtAuthenticationResponse;
 import com.example.dto.user.NewUserDto;
 import com.example.security.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;

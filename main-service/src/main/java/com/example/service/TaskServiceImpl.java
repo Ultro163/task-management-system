@@ -8,6 +8,7 @@ import com.example.error.exception.EntityNotFoundException;
 import com.example.kafka.model.TaskEvent;
 import com.example.kafka.service.KafkaSender;
 import com.example.model.Task;
+import com.example.model.TaskState;
 import com.example.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,12 +53,12 @@ public class TaskServiceImpl implements TaskService {
         task.setCreatedAt(LocalDateTime.now());
 
         TaskEvent taskEvent = taskMapper.toTaskEvent(task);
-        taskEvent.setCompletedAt(LocalDateTime.now());
-        taskEvent.setUpdatedAt(LocalDateTime.now());
-        log.info("----------------------------------------{}", taskEvent);
+//        taskEvent.setCompletedAt(LocalDateTime.now());
+//        taskEvent.setUpdatedAt(LocalDateTime.now());
+
         Task result = taskRepository.save(task);
         taskEvent.setTaskId(result.getId());
-        kafkaSender.sendTaskEvent("topic-1", taskEvent);
+        kafkaSender.sendTaskEventToPartition0("STATISTIC-TOPIC", taskEvent);
         log.info("Task created: {}", result);
         return taskMapper.toShortTaskDto(result);
     }
@@ -115,14 +116,16 @@ public class TaskServiceImpl implements TaskService {
         if (task.getExecutorId() == userId) {
             Optional.ofNullable(task.getState()).ifPresent(saveTask::setState);
             Task result = taskRepository.save(saveTask);
+            sendUpdateTask(result);
             log.info("Updated task by executor: {}", result);
             return taskMapper.toShortTaskDto(result);
         } else {
-            if (task.getAuthorId() == userId) {
+            if (saveTask.getAuthor().getId() != userId) {
                 log.warn("User with ID={} do not have permission to update this task", userId);
                 throw new AccessDeniedException("You do not have permission to update this task");
             }
-            return taskMapper.toShortTaskDto(updateFullTask(task, saveTask));
+            Task result = updateFullTask(task, saveTask);
+            return taskMapper.toShortTaskDto(result);
         }
     }
 
@@ -164,8 +167,18 @@ public class TaskServiceImpl implements TaskService {
             saveTask.getExecutor().setId(task.getExecutorId());
         }
         Task result = taskRepository.save(saveTask);
+        sendUpdateTask(result);
         log.info("Updated task by author: {}", result);
         return result;
+    }
+
+    private void sendUpdateTask(Task result) {
+        TaskEvent taskEvent = taskMapper.toTaskEvent(result);
+        if (result.getState() == TaskState.COMPLETED) {
+            taskEvent.setCompletedAt(LocalDateTime.now());
+        }
+        taskEvent.setUpdatedAt(LocalDateTime.now());
+        kafkaSender.sendTaskEventToPartition1("STATISTIC-TOPIC", taskEvent);
     }
 
     /**

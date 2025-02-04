@@ -1,7 +1,7 @@
 package com.example.service;
 
-import com.example.kafka.model.TaskEvent;
 import com.example.dto.TaskReportMapper;
+import com.example.kafka.model.TaskEvent;
 import com.example.model.TaskReport;
 import com.example.repository.TaskReportRepository;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +22,10 @@ public class TaskReportServiceImp {
 
     public List<TaskReport> getTaskReport() {
         return taskReportRepository.findAll();
+    }
+
+    public void update(TaskEvent taskEvent) {
+        TaskReport taskReport = taskReportMapper.toEntity(taskEvent);
+        taskReportRepository.save(taskReport);
     }
 }
