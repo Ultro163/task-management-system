@@ -76,9 +76,6 @@ services:
     container_name: mongodb
     ports:
       - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=ultro
-      - MONGO_INITDB_ROOT_PASSWORD=163163
 #    volumes:
 #      - mongodb_data:/data/db
 #

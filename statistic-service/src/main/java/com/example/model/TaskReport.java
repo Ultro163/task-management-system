@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
-import java.time.OffsetDateTime;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -19,12 +18,9 @@ public class TaskReport {
     private UUID authorId;
     private UUID executorId;
     private String title;
-    @Field(targetType = FieldType.DATE)
-    private OffsetDateTime createdAt;
-    @Field(targetType = FieldType.DATE)
-    private OffsetDateTime updatedAt;
-    @Field(targetType = FieldType.DATE)
-    private OffsetDateTime completedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private LocalDateTime completedAt;
     private Priority priority;
     private TaskState state;
 }
