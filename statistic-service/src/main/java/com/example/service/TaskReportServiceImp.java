@@ -1,7 +1,8 @@
 package com.example.service;
 
 import com.example.dto.TaskReportDto;
-import com.example.dto.TaskReportMapper;
+import com.example.dto.TaskReportGraphDto;
+import com.example.dto.mapper.TaskReportMapper;
 import com.example.dto.TaskReportRequest;
 import com.example.kafka.model.TaskEvent;
 import com.example.model.TaskReport;
@@ -12,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -34,9 +36,9 @@ public class TaskReportServiceImp {
         return reports.stream().map(taskReportMapper::toTaskReportDto).toList();
     }
 
-    public List<TaskReportDto> getTaskReportsGraph(long executorId) {
+    public List<TaskReportGraphDto> getTaskReportsGraph(UUID executorId) {
         return taskReportRepository.findAllByExecutorId(executorId).stream()
-                .map(taskReportMapper::toTaskReportDto).toList();
+                .map(taskReportMapper::toTaskReportGraphDto).toList();
     }
 
 
@@ -47,7 +49,7 @@ public class TaskReportServiceImp {
         log.info("Updated TaskReport for {}", taskEvent);
     }
 
-    public void delete(Long taskId) {
+    public void delete(UUID taskId) {
         log.info("Delete TaskReport for {}", taskId);
         taskReportRepository.deleteById(taskId);
         log.info("Deleted TaskReport for {}", taskId);

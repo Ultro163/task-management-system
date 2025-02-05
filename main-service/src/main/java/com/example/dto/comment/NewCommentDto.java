@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 /**
  * DTO для создания нового комментария.
  * Используется для передачи данных о комментарии, его авторе и задаче.
@@ -25,9 +27,9 @@ public class NewCommentDto {
 
     @NotNull
     @Schema(description = "Идентификатор автора комментария", example = "10")
-    private Long authorId;
+    private UUID authorId;
 
     @NotNull
     @Schema(description = "Идентификатор задачи, к которой относится комментарий", example = "20")
-    private Long taskId;
+    private UUID taskId;
 }

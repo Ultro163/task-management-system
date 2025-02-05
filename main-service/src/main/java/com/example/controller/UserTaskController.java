@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/user/tasks")
@@ -46,7 +47,7 @@ public class UserTaskController {
             summary = "Получить задачу по ID",
             description = "Возвращает задачу пользователя по её идентификатору."
     )
-    public ShortTaskDto getTaskByUserId(@RequestParam long userId, @PathVariable long taskId) {
+    public ShortTaskDto getTaskByUserId(@RequestParam UUID userId, @PathVariable UUID taskId) {
         return taskServiceImpl.getUserTaskById(userId, taskId);
     }
 
@@ -55,7 +56,7 @@ public class UserTaskController {
             summary = "Обновить задачу",
             description = "Обновляет информацию о задаче пользователя."
     )
-    public ShortTaskDto updateTask(@RequestParam long userId, @RequestBody ShortTaskDto dto) {
+    public ShortTaskDto updateTask(@RequestParam UUID userId, @RequestBody ShortTaskDto dto) {
         return taskServiceImpl.updateTaskByUser(userId, dto);
     }
 
@@ -65,7 +66,7 @@ public class UserTaskController {
             description = "Возвращает список задач, созданных указанным автором.",
             security = @SecurityRequirement(name = "Bearer Authentication")
     )
-    public List<TaskDto> getAuthorTasks(@RequestParam long authorId,
+    public List<TaskDto> getAuthorTasks(@RequestParam UUID authorId,
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size,
                                         @RequestParam(required = false) String title) {
@@ -77,7 +78,7 @@ public class UserTaskController {
             summary = "Получить задачи для исполнителя",
             description = "Возвращает список задач, назначенных указанному исполнителю."
     )
-    public List<TaskDto> getTasksForExecutor(@RequestParam long executorId,
+    public List<TaskDto> getTasksForExecutor(@RequestParam UUID executorId,
                                              @RequestParam int page,
                                              @RequestParam int size,
                                              @RequestParam(required = false) String title) {

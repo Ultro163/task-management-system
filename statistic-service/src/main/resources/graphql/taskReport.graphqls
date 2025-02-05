@@ -1,4 +1,7 @@
-scalar GraphQLLong
+scalar UUID
+@specifiedBy(url:
+"https://tools.ietf.org/html/rfc4122"
+)
 
 scalar DateTime
 @specifiedBy(url:
@@ -6,19 +9,19 @@ scalar DateTime
 )
 
 type Query {
-    getTaskReports(executorId: GraphQLLong): [TaskReportDto]
+    getTaskReports(executorId: UUID): [TaskReportGraphDto]
 }
 
-type TaskReportDto {
-    id: GraphQLLong
-    authorId: GraphQLLong
-    executorId: GraphQLLong
+type TaskReportGraphDto {
+    id: ID!
+    authorId: UUID
+    executorId: UUID
     title: String
     createdAt: DateTime
     updatedAt: DateTime
     completedAt: DateTime
     priority: Priority
-    status: TaskState
+    state: TaskState
 }
 
 enum Priority {

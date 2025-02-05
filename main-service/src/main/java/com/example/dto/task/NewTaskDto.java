@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 /**
  * DTO (Data Transfer Object) для создания новой задачи.
  * Используется для передачи данных от клиента на сервер при создании задачи.
@@ -40,8 +42,8 @@ public class NewTaskDto {
     private Priority priority;
 
     @Schema(description = "Идентификатор автора задачи", example = "12")
-    private Long authorId;
+    private UUID authorId;
 
     @Schema(description = "Идентификатор исполнителя задачи", example = "4")
-    private Long executorId;
+    private UUID executorId;
 }

@@ -9,9 +9,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * DTO (Data Transfer Object) для представления полной информации о задаче.
@@ -24,7 +25,7 @@ import java.util.List;
 public class TaskDto {
 
     @Schema(description = "Уникальный идентификатор задачи", example = "1")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Заголовок задачи", example = "Завершить домашку")
     private String title;
@@ -46,7 +47,7 @@ public class TaskDto {
     @Schema(description = "Информация об исполнителе задачи", implementation = UserDto.class)
     private UserDto executor;
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @Schema(description = "Список комментариев к задаче", implementation = CommentDto.class)
     private List<CommentDto> comments = new ArrayList<>();

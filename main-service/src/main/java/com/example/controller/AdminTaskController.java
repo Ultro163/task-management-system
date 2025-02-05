@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin/tasks")
@@ -41,7 +42,7 @@ public class AdminTaskController {
 
     @GetMapping("/{taskId}")
     @Operation(summary = "Получить задачу по ID", description = "Возвращает краткую информацию о задаче по её идентификатору")
-    public ShortTaskDto getTaskById(@PathVariable long taskId) {
+    public ShortTaskDto getTaskById(@PathVariable UUID taskId) {
         return taskServiceImpl.getTaskById(taskId);
     }
 
@@ -54,13 +55,13 @@ public class AdminTaskController {
     @DeleteMapping("/{taskId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Удалить задачу", description = "Удаляет задачу по её идентификатору")
-    public void deleteTask(@PathVariable long taskId) {
+    public void deleteTask(@PathVariable UUID taskId) {
         taskServiceImpl.deleteTaskByAdmin(taskId);
     }
 
     @GetMapping("/author")
     @Operation(summary = "Получить задачи автора", description = "Возвращает список задач, созданных автором")
-    public List<TaskDto> getAuthorTasks(@RequestParam long authorId,
+    public List<TaskDto> getAuthorTasks(@RequestParam UUID authorId,
                                         @RequestParam(defaultValue = "0") int page,
                                         @RequestParam(defaultValue = "10") int size,
                                         @RequestParam(required = false) String title) {
@@ -69,7 +70,7 @@ public class AdminTaskController {
 
     @GetMapping("/executor")
     @Operation(summary = "Получить задачи для исполнителя", description = "Возвращает список задач, назначенных исполнителю")
-    public List<TaskDto> getTasksForExecutor(@RequestParam long executorId,
+    public List<TaskDto> getTasksForExecutor(@RequestParam UUID executorId,
                                              @RequestParam int page,
                                              @RequestParam int size,
                                              @RequestParam(required = false) String title) {

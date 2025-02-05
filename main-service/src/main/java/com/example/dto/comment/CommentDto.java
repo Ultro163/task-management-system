@@ -7,6 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 /**
  * DTO для представления комментария.
  * Содержит информацию о комментарии, его авторе и задаче, к которой он относится.
@@ -18,7 +20,7 @@ import lombok.NoArgsConstructor;
 public class CommentDto {
 
     @Schema(description = "Уникальный идентификатор комментария", example = "1")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Текстовое описание комментария", example = "Отличная работа!")
     private String description;

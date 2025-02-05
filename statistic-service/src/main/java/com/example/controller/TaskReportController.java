@@ -1,7 +1,7 @@
 package com.example.controller;
 
 import com.example.dto.TaskReportDto;
-import com.example.dto.TaskReportMapper;
+import com.example.dto.mapper.TaskReportMapper;
 import com.example.dto.TaskReportRequest;
 import com.example.model.Priority;
 import com.example.model.TaskState;
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,8 +23,8 @@ public class TaskReportController {
     private final TaskReportMapper taskReportMapper;
 
     @GetMapping
-    public List<TaskReportDto> getTaskReport(@RequestParam(required = false) Long executorId,
-                                             @RequestParam(required = false) Long authorId,
+    public List<TaskReportDto> getTaskReport(@RequestParam(required = false) UUID executorId,
+                                             @RequestParam(required = false) UUID authorId,
                                              @RequestParam(defaultValue = "0") int page,
                                              @RequestParam(defaultValue = "10") int size,
                                              @RequestParam(required = false) String title,

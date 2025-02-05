@@ -6,7 +6,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 /**
  * DTO for {@link com.example.model.TaskReport}
@@ -15,13 +17,13 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskReportDto {
-    private Long id;
-    private Long authorId;
-    private Long executorId;
+    private UUID id;
+    private UUID authorId;
+    private UUID executorId;
     private String title;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime completedAt;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+    private OffsetDateTime completedAt;
     private Priority priority;
     private TaskState state;
 }

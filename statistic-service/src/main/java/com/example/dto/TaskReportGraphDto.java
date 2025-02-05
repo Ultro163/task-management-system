@@ -1,7 +1,6 @@
-package com.example.kafka.model;
+package com.example.dto;
 
 import com.example.model.Priority;
-import com.example.model.TaskReport;
 import com.example.model.TaskState;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,13 +10,13 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 /**
- * DTO for {@link TaskReport}
+ * DTO for {@link com.example.model.TaskReport}
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskEvent {
-    private UUID taskId;
+public class TaskReportGraphDto {
+    private UUID id;
     private UUID authorId;
     private UUID executorId;
     private String title;

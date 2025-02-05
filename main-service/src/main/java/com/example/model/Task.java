@@ -19,10 +19,11 @@ import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 @Getter
 @Setter
@@ -31,9 +32,9 @@ import java.util.Objects;
 @ToString
 public class Task implements Serializable {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private UUID id;
 
     @Column(name = "title", nullable = false, length = 50)
     private String title;
@@ -60,7 +61,7 @@ public class Task implements Serializable {
     private User executor;
 
     @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "task")
     @JsonManagedReference

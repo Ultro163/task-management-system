@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Сервис для управления пользователями.
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(readOnly = true)
-    public User getById(long id) {
+    public User getById(UUID id) {
         return userRepository.findById(id).orElseThrow(() -> {
             log.warn("User not found with ID {}", id);
             return new EntityNotFoundException("User with ID=" + id + " not found");
@@ -77,7 +78,7 @@ public class UserServiceImpl implements UserService {
      * @param id идентификатор пользователя.
      */
     @Override
-    public void delete(long id) {
+    public void delete(UUID id) {
         log.info("Delete user with ID {}", id);
         userRepository.existsById(id);
         userRepository.deleteById(id);

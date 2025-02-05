@@ -6,10 +6,11 @@ import org.springframework.data.mongodb.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
-public interface TaskReportRepository extends MongoRepository<TaskReport, Long> {
+public interface TaskReportRepository extends MongoRepository<TaskReport, UUID> {
 
     @Query("{ 'executorId' : ?0 }")
-    List<TaskReport> findAllByExecutorId(long executorId);
+    List<TaskReport> findAllByExecutorId(UUID executorId);
 }

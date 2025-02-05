@@ -9,6 +9,8 @@ import org.springframework.kafka.annotation.TopicPartition;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -23,8 +25,14 @@ public class KafkaListenerExample {
             containerFactory = "kafkaListenerContainerFactory"
     )
     void listenerPartition0(@Payload TaskEvent taskEvent) {
-        log.info("Received message [{}] in statistic from partition 0", taskEvent);
-        taskReportServiceImp.create(taskEvent);
+//        log.info("Received message [{}] in statistic from partition 0", taskEvent);
+//        taskReportServiceImp.create(taskEvent);
+        try {
+            log.info("Получено сообщение из Kafka: {}", taskEvent);
+            taskReportServiceImp.create(taskEvent);
+        } catch (Exception e) {
+            log.error("Ошибка при обработке Kafka-сообщения: ", e);
+        }
     }
 
     // Слушатель для партиции 1
@@ -43,7 +51,7 @@ public class KafkaListenerExample {
             groupId = "statistic",
             containerFactory = "kafkaListenerContainerFactory"
     )
-    void listenerPartition2(@Payload Long taskId) {
+    void listenerPartition2(@Payload UUID taskId) {
         log.info("Received message [{}] in statistic from partition 2", taskId);
         taskReportServiceImp.delete(taskId);
     }

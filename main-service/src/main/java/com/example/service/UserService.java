@@ -2,13 +2,15 @@ package com.example.service;
 
 import com.example.model.User;
 
+import java.util.UUID;
+
 public interface UserService {
 
     User create(User user);
 
-    User getById(long id);
+    User getById(UUID id);
 
     User update(User user);
 
-    void delete(long id);
+    void delete(UUID id);
 }

@@ -5,17 +5,18 @@ import com.example.model.TaskState;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Data
 public class TaskEvent implements Serializable {
-    private Long taskId;
-    private Long authorId;
-    private Long executorId;
+    private UUID taskId;
+    private UUID authorId;
+    private UUID executorId;
     private String title;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private LocalDateTime completedAt;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+    private OffsetDateTime completedAt;
     private Priority priority;
     private TaskState state;
 }

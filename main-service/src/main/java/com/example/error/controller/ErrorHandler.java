@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,7 +66,7 @@ public class ErrorHandler {
                 .message(errorMessage)
                 .reason(reason)
                 .status(HttpStatus.BAD_REQUEST.name())
-                .timestamp(LocalDateTime.now())
+                .timestamp(OffsetDateTime.now())
                 .build();
     }
 
@@ -80,7 +80,7 @@ public class ErrorHandler {
                 .message(e.getMessage())
                 .reason("EntityNotFoundException")
                 .status(HttpStatus.NOT_FOUND.name())
-                .timestamp(LocalDateTime.now())
+                .timestamp(OffsetDateTime.now())
                 .build();
     }
 
@@ -97,7 +97,7 @@ public class ErrorHandler {
                 .message(errorMessage)
                 .reason(reason)
                 .status(HttpStatus.CONFLICT.name())
-                .timestamp(LocalDateTime.now())
+                .timestamp(OffsetDateTime.now())
                 .build();
     }
 
@@ -112,7 +112,7 @@ public class ErrorHandler {
                 .message("Access denied due to insufficient permissions")
                 .reason("AccessDeniedException")
                 .status(HttpStatus.FORBIDDEN.name())
-                .timestamp(LocalDateTime.now())
+                .timestamp(OffsetDateTime.now())
                 .build();
     }
 
@@ -127,7 +127,7 @@ public class ErrorHandler {
                 .message("An unexpected internal server error occurred")
                 .reason("InternalServerError")
                 .status(HttpStatus.INTERNAL_SERVER_ERROR.name())
-                .timestamp(LocalDateTime.now())
+                .timestamp(OffsetDateTime.now())
                 .build();
     }
 

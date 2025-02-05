@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -23,7 +25,7 @@ public class TaskReadServiceImpl implements TaskReadService {
      * @throws EntityNotFoundException если задача не найдена.
      */
     @Transactional(readOnly = true)
-    public Task getTaskById(long id) {
+    public Task getTaskById(UUID id) {
         log.info("Getting task with ID={}", id);
         return taskRepository.findByIdForAdmin(id).orElseThrow(() -> {
             log.warn("Task not found with ID {}", id);

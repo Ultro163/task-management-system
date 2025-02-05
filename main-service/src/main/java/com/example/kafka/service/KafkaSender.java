@@ -7,6 +7,8 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 @Component
 @Slf4j
 @RequiredArgsConstructor
@@ -28,7 +30,7 @@ public class KafkaSender {
         taskKafkaTemplate.send(producerRecord);
     }
 
-    public void sendDeletedTaskEvent(String topicName, Long taskId) {
+    public void sendDeletedTaskEvent(String topicName, UUID taskId) {
         log.info("Sending to partition 2: {}", taskId);
         ProducerRecord<String, Object> producerRecord = new ProducerRecord<>(topicName, 2, null, taskId);
         taskKafkaTemplate.send(producerRecord);

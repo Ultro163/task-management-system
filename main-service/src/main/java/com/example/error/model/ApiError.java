@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,5 +42,5 @@ public class ApiError {
     @Schema(description = "Время возникновения ошибки",
             example = "2025-01-24T12:30:00", pattern = "yyyy-MM-dd HH:mm:ss")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = Constants.DATE_TIME_FORMAT)
-    LocalDateTime timestamp;
+    OffsetDateTime timestamp;
 }

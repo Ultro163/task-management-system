@@ -4,10 +4,12 @@ import com.example.model.Priority;
 import com.example.model.TaskState;
 import lombok.Data;
 
+import java.util.UUID;
+
 @Data
 public class TaskReportRequest {
-    private Long executorId;
-    private Long authorId;
+    private UUID executorId;
+    private UUID authorId;
     private String title;
     private Priority priority;
     private TaskState taskState;

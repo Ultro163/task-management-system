@@ -21,9 +21,10 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Сервис для управления задачами.
@@ -50,7 +51,7 @@ public class TaskServiceImpl implements TaskService {
         log.info("Create task: {}", newTask);
         userServiceImpl.getById(newTask.getExecutorId());
         Task task = taskMapper.toEntity(newTask);
-        task.setCreatedAt(LocalDateTime.now());
+        task.setCreatedAt(OffsetDateTime.now());
         Task result = taskRepository.save(task);
 
         TaskEvent taskEvent = taskMapper.toTaskEvent(task);
@@ -70,7 +71,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "tasks", key = "#id")
-    public ShortTaskDto getTaskById(long id) {
+    public ShortTaskDto getTaskById(UUID id) {
         log.info("Getting task with ID={}", id);
         return taskMapper.toShortTaskDto(taskRepository.findByIdForAdmin(id).orElseThrow(() -> {
             log.warn("Task not found with ID {}", id);
@@ -89,7 +90,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "tasks", key = "#taskId")
-    public ShortTaskDto getUserTaskById(long userId, long taskId) {
+    public ShortTaskDto getUserTaskById(UUID userId, UUID taskId) {
         Task task = taskReadServiceImpl.getTaskById(taskId);
         if (task.getAuthor().getId() != userId) {
             throw new AccessDeniedException("You do not have permission to access this task");
@@ -107,7 +108,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     @CacheEvict(value = "tasks", key = "#task.id")
-    public ShortTaskDto updateTaskByUser(long userId, ShortTaskDto task) {
+    public ShortTaskDto updateTaskByUser(UUID userId, ShortTaskDto task) {
         log.info("Update task by user: {}", task);
         Task saveTask = taskReadServiceImpl.getTaskById(task.getId());
         if (task.getExecutorId() == userId) {
@@ -172,9 +173,9 @@ public class TaskServiceImpl implements TaskService {
     private void sendUpdateTask(Task result) {
         TaskEvent taskEvent = taskMapper.toTaskEvent(result);
         if (result.getState() == TaskState.COMPLETED) {
-            taskEvent.setCompletedAt(LocalDateTime.now());
+            taskEvent.setCompletedAt(OffsetDateTime.now());
         }
-        taskEvent.setUpdatedAt(LocalDateTime.now());
+        taskEvent.setUpdatedAt(OffsetDateTime.now());
         kafkaSender.sendUpdatedTaskEvent("STATISTIC-TOPIC", taskEvent);
     }
 
@@ -185,7 +186,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     @CacheEvict(value = "tasks", key = "#id")
-    public void deleteTaskByAdmin(long id) {
+    public void deleteTaskByAdmin(UUID id) {
         log.info("Delete task with ID={}", id);
         taskRepository.existsById(id);
         taskRepository.deleteById(id);
@@ -205,7 +206,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(readOnly = true)
     @Cacheable(value = "tasks", key = "#authorId + '-' + #title + '-' + #page + '-' + #size")
-    public List<TaskDto> getAuthorTasks(long authorId, int page, int size, String title) {
+    public List<TaskDto> getAuthorTasks(UUID authorId, int page, int size, String title) {
         Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
         return taskRepository.findAllByAuthorId(authorId, title, pageable).stream()
                 .map(taskMapper::toTaskDto).toList();
@@ -222,7 +223,7 @@ public class TaskServiceImpl implements TaskService {
      */
     @Override
     @Transactional(readOnly = true)
-    public List<TaskDto> getTasksForExecutor(long executorId, int page, int size, String title) {
+    public List<TaskDto> getTasksForExecutor(UUID executorId, int page, int size, String title) {
         Pageable pageable = PageRequest.of(page, size, Sort.unsorted());
         return taskRepository.findAllByExecutorId(executorId, title, pageable).stream()
                 .map(taskMapper::toTaskDto).toList();

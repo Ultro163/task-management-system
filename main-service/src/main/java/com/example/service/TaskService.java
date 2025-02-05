@@ -5,21 +5,22 @@ import com.example.dto.task.ShortTaskDto;
 import com.example.dto.task.TaskDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface TaskService {
     ShortTaskDto createTask(NewTaskDto newTask);
 
-    ShortTaskDto getTaskById(long id);
+    ShortTaskDto getTaskById(UUID id);
 
-    ShortTaskDto getUserTaskById(long userId, long taskId);
+    ShortTaskDto getUserTaskById(UUID userId, UUID taskId);
 
-    ShortTaskDto updateTaskByUser(long userId, ShortTaskDto task);
+    ShortTaskDto updateTaskByUser(UUID userId, ShortTaskDto task);
 
     ShortTaskDto updateTaskByAdmin(ShortTaskDto task);
 
-    void deleteTaskByAdmin(long id);
+    void deleteTaskByAdmin(UUID id);
 
-    List<TaskDto> getAuthorTasks(long authorId, int page, int size, String title);
+    List<TaskDto> getAuthorTasks(UUID authorId, int page, int size, String title);
 
-    List<TaskDto> getTasksForExecutor(long executorId, int page, int size, String title);
+    List<TaskDto> getTasksForExecutor(UUID executorId, int page, int size, String title);
 }

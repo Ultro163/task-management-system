@@ -7,7 +7,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 /**
  * DTO (Data Transfer Object) для представления краткой информации о задаче.
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 public class ShortTaskDto {
 
     @Schema(description = "Уникальный идентификатор задачи", example = "1")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Заголовок задачи", example = "Завершить домашку")
     private String title;
@@ -37,11 +38,11 @@ public class ShortTaskDto {
     private Priority priority;
 
     @Schema(description = "Идентификатор автора задачи", example = "12")
-    private Long authorId;
+    private UUID authorId;
 
     @Schema(description = "Идентификатор исполнителя задачи", example = "4")
-    private Long executorId;
+    private UUID executorId;
 
-    private LocalDateTime createdAt;
+    private OffsetDateTime createdAt;
 
 }

@@ -9,8 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface TaskRepository extends JpaRepository<Task, Long> {
+public interface TaskRepository extends JpaRepository<Task, UUID> {
 
 
     @EntityGraph(attributePaths = {"author", "executor"})
@@ -21,7 +22,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             where t.author.id = :authorId
             AND t.title ILIKE COALESCE(CONCAT('%', :title, '%'), '%')
             """)
-    List<Task> findAllByAuthorId(@Param("authorId") long authorId, @Param("title") String title, Pageable pageable);
+    List<Task> findAllByAuthorId(@Param("authorId") UUID authorId, @Param("title") String title, Pageable pageable);
 
     @EntityGraph(attributePaths = {"author", "executor"})
     @Query("""
@@ -31,7 +32,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             where t.executor.id = :executorId
             AND t.title ILIKE COALESCE(CONCAT('%', :title, '%'), '%')
             """)
-    List<Task> findAllByExecutorId(@Param("executorId") long authorId, @Param("title") String title, Pageable pageable);
+    List<Task> findAllByExecutorId(@Param("executorId") UUID authorId, @Param("title") String title, Pageable pageable);
 
     @EntityGraph(attributePaths = {"author", "executor", "comments"})
     @Query("""
@@ -40,5 +41,5 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             LEFT JOIN FETCH t.comments
             where t.id = :taskId
             """)
-    Optional<Task> findByIdForAdmin(@Param("taskId") long taskId);
+    Optional<Task> findByIdForAdmin(@Param("taskId") UUID taskId);
 }
