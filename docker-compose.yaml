@@ -1,17 +1,19 @@
 services:
-
-  task-management-system-guide:
-    image: task-management-system-guide
-    build: .
-    container_name: task-management-system-guide
-    ports:
-      - "8080:8080"
-    depends_on:
-      - tms_db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://tms_db:5432/tms_db
-      - SPRING_DATASOURCE_USERNAME=ultro
-      - SPRING_DATASOURCE_PASSWORD=163163
+#  task-management-system:
+#    image: main-service
+#    build: main-service
+#    container_name: main-service_tms
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - tms_db
+#      - redis
+#    environment:
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://tms_db:5432/tms_db
+#      - SPRING_DATASOURCE_USERNAME=ultro
+#      - SPRING_DATASOURCE_PASSWORD=163163
+#      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+#      - REDIS_HOST=redis
 
   tms_db:
     image: postgres:16.1
@@ -27,3 +29,55 @@ services:
       timeout: 5s
       interval: 5s
       retries: 10
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://host.docker.internal:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka:9092 --list" ]
+      interval: 10s
+      retries: 5
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    environment:
+      - REDIS_PASSWORD=163163
+    command: redis-server --requirepass 163163
+    healthcheck:
+      test: "redis-cli -a 163163 ping"
+      interval: 10s
+      retries: 5
+      timeout: 5s
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+#    volumes:
+#      - mongodb_data:/data/db
+#
+#volumes:
+#  mongodb_data:

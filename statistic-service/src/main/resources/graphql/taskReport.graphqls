@@ -1,0 +1,37 @@
+scalar UUID
+@specifiedBy(url:
+"https://tools.ietf.org/html/rfc4122"
+)
+
+scalar DateTime
+@specifiedBy(url:
+"https://scalars.graphql.org/andimarek/date-time.html"
+)
+
+type Query {
+    getTaskReports(executorId: UUID): [TaskReportGraphDto]
+}
+
+type TaskReportGraphDto {
+    id: ID!
+    authorId: UUID
+    executorId: UUID
+    title: String
+    createdAt: DateTime
+    updatedAt: DateTime
+    completedAt: DateTime
+    priority: Priority
+    state: TaskState
+}
+
+enum Priority {
+    LOW
+    MEDIUM
+    HIGH
+}
+
+enum TaskState {
+    PENDING
+    IN_PROGRESS
+    COMPLETED
+}
