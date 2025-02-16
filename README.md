@@ -18,8 +18,11 @@ Task Management System (Система управления задачами) �
 - **Java 21**
 - **Spring Boot 3.4**
 - **Spring Data JPA** (Hibernate)
-- **PostgreSQL** (база для тестирования)
-- **Lombok** (упрощение работы с POJO)
+- **PostgreSQL**
+- **MongoDB**
+- **Redis**
+- **Apache Kafka**
+- **Lombok** 
 - **Springdoc OpenAPI** (генерация Swagger-документации)
 - **Maven** (сборка проекта)
 
