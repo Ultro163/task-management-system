@@ -15,27 +15,18 @@ import java.util.UUID;
 @Slf4j
 @RequiredArgsConstructor
 public class KafkaListenerExample {
-
     private final TaskReportServiceImp taskReportServiceImp;
 
-    // Слушатель для партиции 0
     @KafkaListener(
             topicPartitions = @TopicPartition(topic = "STATISTIC-TOPIC", partitions = {"0"}),
             groupId = "statistic",
             containerFactory = "kafkaListenerContainerFactory"
     )
     void listenerPartition0(@Payload TaskEvent taskEvent) {
-//        log.info("Received message [{}] in statistic from partition 0", taskEvent);
-//        taskReportServiceImp.create(taskEvent);
-        try {
-            log.info("Получено сообщение из Kafka: {}", taskEvent);
-            taskReportServiceImp.create(taskEvent);
-        } catch (Exception e) {
-            log.error("Ошибка при обработке Kafka-сообщения: ", e);
-        }
+        log.info("Received message [{}] in statistic from partition 0", taskEvent);
+        taskReportServiceImp.create(taskEvent);
     }
 
-    // Слушатель для партиции 1
     @KafkaListener(
             topicPartitions = @TopicPartition(topic = "STATISTIC-TOPIC", partitions = {"1"}),
             groupId = "statistic",

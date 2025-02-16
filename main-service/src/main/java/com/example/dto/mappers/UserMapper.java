@@ -1,7 +1,6 @@
-package com.example.dto;
+package com.example.dto.mappers;
 
 import com.example.dto.user.NewUserDto;
-import com.example.dto.user.UserDto;
 import com.example.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
@@ -12,5 +11,4 @@ public interface UserMapper {
 
     User toEntity(NewUserDto newUserDto);
 
-    UserDto toUserDto(User user);
 }

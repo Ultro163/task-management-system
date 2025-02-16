@@ -2,8 +2,8 @@ package com.example.service;
 
 import com.example.dto.TaskReportDto;
 import com.example.dto.TaskReportGraphDto;
-import com.example.dto.mapper.TaskReportMapper;
 import com.example.dto.TaskReportRequest;
+import com.example.dto.mapper.TaskReportMapper;
 import com.example.kafka.model.TaskEvent;
 import com.example.model.TaskReport;
 import com.example.repository.TaskReportRepository;

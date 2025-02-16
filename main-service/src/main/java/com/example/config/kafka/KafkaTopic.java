@@ -12,5 +12,4 @@ public class KafkaTopic {
     public NewTopic topic1() {
         return TopicBuilder.name("STATISTIC-TOPIC").partitions(3).build();
     }
-
 }

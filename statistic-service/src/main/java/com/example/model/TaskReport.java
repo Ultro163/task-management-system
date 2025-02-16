@@ -12,7 +12,6 @@ import java.util.UUID;
 @Setter
 @Document
 public class TaskReport {
-
     @Id
     private UUID id;
     private UUID authorId;

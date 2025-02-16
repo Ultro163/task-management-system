@@ -1,6 +1,6 @@
 package com.example.controller;
 
-import com.example.dto.TaskMapper;
+import com.example.dto.mappers.TaskMapper;
 import com.example.dto.comment.CommentDto;
 import com.example.dto.comment.NewCommentDto;
 import com.example.model.Comment;

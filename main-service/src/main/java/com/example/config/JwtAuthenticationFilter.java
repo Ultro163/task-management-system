@@ -80,8 +80,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal Server Error");
             return;
         }
-
         filterChain.doFilter(request, response);
     }
-
 }

@@ -1,6 +1,6 @@
 package com.example.service;
 
-import com.example.dto.TaskMapper;
+import com.example.dto.mappers.TaskMapper;
 import com.example.dto.task.NewTaskDto;
 import com.example.dto.task.ShortTaskDto;
 import com.example.dto.task.TaskDto;
@@ -34,6 +34,7 @@ import java.util.UUID;
 @Service
 @Transactional
 public class TaskServiceImpl implements TaskService {
+    private static final String STATISTIC_TOPIC = "STATISTIC-TOPIC";
     private final TaskRepository taskRepository;
     private final UserService userServiceImpl;
     private final TaskReadService taskReadServiceImpl;
@@ -56,7 +57,7 @@ public class TaskServiceImpl implements TaskService {
 
         TaskEvent taskEvent = taskMapper.toTaskEvent(task);
         taskEvent.setTaskId(result.getId());
-        kafkaSender.sendNewTaskEvent("STATISTIC-TOPIC", taskEvent);
+        kafkaSender.sendNewTaskEvent(STATISTIC_TOPIC, taskEvent);
         log.info("Task created: {}", result);
         return taskMapper.toShortTaskDto(result);
     }
@@ -176,7 +177,7 @@ public class TaskServiceImpl implements TaskService {
             taskEvent.setCompletedAt(OffsetDateTime.now());
         }
         taskEvent.setUpdatedAt(OffsetDateTime.now());
-        kafkaSender.sendUpdatedTaskEvent("STATISTIC-TOPIC", taskEvent);
+        kafkaSender.sendUpdatedTaskEvent(STATISTIC_TOPIC, taskEvent);
     }
 
     /**
@@ -190,7 +191,7 @@ public class TaskServiceImpl implements TaskService {
         log.info("Delete task with ID={}", id);
         taskRepository.existsById(id);
         taskRepository.deleteById(id);
-        kafkaSender.sendDeletedTaskEvent("STATISTIC-TOPIC", id);
+        kafkaSender.sendDeletedTaskEvent(STATISTIC_TOPIC, id);
         log.info("Deleted task with ID={}", id);
     }
 

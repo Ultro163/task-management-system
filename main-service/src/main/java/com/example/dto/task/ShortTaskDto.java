@@ -44,5 +44,4 @@ public class ShortTaskDto {
     private UUID executorId;
 
     private OffsetDateTime createdAt;
-
 }

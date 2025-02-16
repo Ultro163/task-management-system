@@ -1,7 +1,6 @@
 package com.example.controller;
 
 import com.example.dto.TaskReportDto;
-import com.example.dto.mapper.TaskReportMapper;
 import com.example.dto.TaskReportRequest;
 import com.example.model.Priority;
 import com.example.model.TaskState;
@@ -20,7 +19,6 @@ import java.util.UUID;
 @RequestMapping("/statistic/task")
 public class TaskReportController {
     private final TaskReportServiceImp taskReportServiceImp;
-    private final TaskReportMapper taskReportMapper;
 
     @GetMapping
     public List<TaskReportDto> getTaskReport(@RequestParam(required = false) UUID executorId,

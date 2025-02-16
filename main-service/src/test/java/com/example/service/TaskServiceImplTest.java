@@ -1,164 +1,196 @@
-//package com.example.service;
-//
-//import com.example.error.exception.EntityNotFoundException;
-//import com.example.model.Task;
-//import com.example.model.User;
-//import com.example.repository.TaskRepository;
-//import org.junit.jupiter.api.BeforeEach;
-//import org.junit.jupiter.api.Test;
-//import org.mockito.InjectMocks;
-//import org.mockito.Mock;
-//import org.mockito.MockitoAnnotations;
-//import org.springframework.security.access.AccessDeniedException;
-//
-//import java.util.List;
-//import java.util.Optional;
-//
-//import static org.junit.jupiter.api.Assertions.*;
-//import static org.mockito.Mockito.*;
-//
-//class TaskServiceImplTest {
-//
-//    @Mock
-//    private TaskRepository taskRepository;
-//
-//    @Mock
-//    private UserService userService;
-//
-//    @InjectMocks
-//    private TaskServiceImpl taskService;
-//
-//    @BeforeEach
-//    void setUp() {
-//        MockitoAnnotations.openMocks(this);
-//    }
-//
-//    @Test
-//    void createTask_success() {
-//        Task task = new Task();
-//        task.setId(1L);
-//        User executor = new User();
-//        executor.setId(2L);
-//        task.setExecutor(executor);
-//
-//        when(userService.getById(2L)).thenReturn(executor);
-//        when(taskRepository.save(task)).thenReturn(task);
-//
-//        Task result = taskService.createTask(task);
-//
-//        assertNotNull(result);
-//        assertEquals(1L, result.getId());
-//        verify(userService, times(1)).getById(2L);
-//        verify(taskRepository, times(1)).save(task);
-//    }
-//
-//    @Test
-//    void getTaskById_taskExists() {
-//        Task task = new Task();
-//        task.setId(1L);
-//
-//        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
-//
-//        Task result = taskService.getTaskById(1L);
-//
-//        assertNotNull(result);
-//        assertEquals(1L, result.getId());
-//        verify(taskRepository, times(1)).findById(1L);
-//    }
-//
-//    @Test
-//    void getTaskById_taskNotFound() {
-//        when(taskRepository.findById(1L)).thenReturn(Optional.empty());
-//
-//        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class, () -> taskService.getTaskById(1L));
-//        assertEquals("Task with ID=1 not found", exception.getMessage());
-//        verify(taskRepository, times(1)).findById(1L);
-//    }
-//
-//    @Test
-//    void getUserTaskById_userHasAccess() {
-//        Task task = new Task();
-//        task.setId(1L);
-//        User author = new User();
-//        author.setId(3L);
-//        task.setAuthor(author);
-//
-//        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
-//
-//        Task result = taskService.getUserTaskById(3L, 1L);
-//
-//        assertNotNull(result);
-//        assertEquals(1L, result.getId());
-//        verify(taskRepository, times(1)).findById(1L);
-//    }
-//
-//    @Test
-//    void getUserTaskById_accessDenied() {
-//        Task task = new Task();
-//        task.setId(1L);
-//        User author = new User();
-//        author.setId(3L);
-//        task.setAuthor(author);
-//
-//        when(taskRepository.findById(1L)).thenReturn(Optional.of(task));
-//
-//        assertThrows(AccessDeniedException.class, () -> taskService.getUserTaskById(4L, 1L));
-//        verify(taskRepository, times(1)).findById(1L);
-//    }
-//
-//    @Test
-//    void updateTaskByAdmin_success() {
-//        Task task = new Task();
-//        task.setId(1L);
-//        Task existingTask = new Task();
-//        existingTask.setId(1L);
-//
-//        when(taskRepository.findById(1L)).thenReturn(Optional.of(existingTask));
-//        when(taskRepository.save(existingTask)).thenReturn(existingTask);
-//
-//        Task result = taskService.updateTaskByAdmin(task);
-//
-//        assertNotNull(result);
-//        assertEquals(1L, result.getId());
-//        verify(taskRepository, times(1)).findById(1L);
-//        verify(taskRepository, times(1)).save(existingTask);
-//    }
-//
-//    @Test
-//    void deleteTaskByAdmin_success() {
-//        when(taskRepository.existsById(1L)).thenReturn(true);
-//
-//        taskService.deleteTaskByAdmin(1L);
-//
-//        verify(taskRepository, times(1)).existsById(1L);
-//        verify(taskRepository, times(1)).deleteById(1L);
-//    }
-//
-//    @Test
-//    void getAuthorTasks_success() {
-//        Task task = new Task();
-//        task.setId(1L);
-//        when(taskRepository.findAllByAuthorId(eq(3L), any(), any())).thenReturn(List.of(task));
-//
-//        List<Task> tasks = taskService.getAuthorTasks(3L, 0, 10, null);
-//
-//        assertNotNull(tasks);
-//        assertEquals(1, tasks.size());
-//        assertEquals(1L, tasks.get(0).getId());
-//        verify(taskRepository, times(1)).findAllByAuthorId(eq(3L), any(), any());
-//    }
-//
-//    @Test
-//    void getTasksForExecutor_success() {
-//        Task task = new Task();
-//        task.setId(1L);
-//        when(taskRepository.findAllByExecutorId(eq(2L), any(), any())).thenReturn(List.of(task));
-//
-//        List<Task> tasks = taskService.getTasksForExecutor(2L, 0, 10, null);
-//
-//        assertNotNull(tasks);
-//        assertEquals(1, tasks.size());
-//        assertEquals(1L, tasks.get(0).getId());
-//        verify(taskRepository, times(1)).findAllByExecutorId(eq(2L), any(), any());
-//    }
-//}
+package com.example.service;
+
+import com.example.dto.mappers.TaskMapper;
+import com.example.dto.task.NewTaskDto;
+import com.example.dto.task.ShortTaskDto;
+import com.example.dto.task.TaskDto;
+import com.example.error.exception.EntityNotFoundException;
+import com.example.kafka.model.TaskEvent;
+import com.example.kafka.service.KafkaSender;
+import com.example.model.Task;
+import com.example.model.User;
+import com.example.repository.TaskRepository;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.access.AccessDeniedException;
+
+import java.util.Optional;
+import java.util.UUID;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class TaskServiceImplTest {
+
+    @Mock
+    private TaskRepository taskRepository;
+
+    @Mock
+    private UserService userService;
+
+    @Mock
+    private TaskReadService taskReadService;
+
+    @Mock
+    private TaskMapper taskMapper;
+
+    @Mock
+    private KafkaSender kafkaSender;
+
+    @InjectMocks
+    private TaskServiceImpl taskService;
+
+    @Test
+    void createTask_success() {
+        UUID executorId = UUID.randomUUID();
+        User executor = new User();
+        executor.setId(executorId);
+
+        NewTaskDto newTaskDto = new NewTaskDto();
+        newTaskDto.setExecutorId(executorId);
+
+        Task task = new Task();
+        task.setId(UUID.randomUUID());
+        task.setExecutor(executor);
+
+        ShortTaskDto shortTaskDto = new ShortTaskDto();
+        shortTaskDto.setId(task.getId());
+
+        TaskEvent taskEvent = new TaskEvent();
+        taskEvent.setTaskId(task.getId());
+
+        when(userService.getById(executorId)).thenReturn(executor);
+        when(taskMapper.toEntity(newTaskDto)).thenReturn(task);
+        when(taskRepository.save(any(Task.class))).thenReturn(task);
+        when(taskMapper.toShortTaskDto(task)).thenReturn(shortTaskDto);
+        when(taskMapper.toTaskEvent(task)).thenReturn(taskEvent);
+
+        ShortTaskDto result = taskService.createTask(newTaskDto);
+
+        assertNotNull(result);
+        assertEquals(task.getId(), result.getId());
+
+        verify(userService, times(1)).getById(executorId);
+        verify(taskMapper, times(1)).toEntity(newTaskDto);
+        verify(taskRepository, times(1)).save(any(Task.class));
+        verify(taskMapper, times(1)).toShortTaskDto(task);
+        verify(taskMapper, times(1)).toTaskEvent(task);
+        verify(kafkaSender, times(1))
+                .sendNewTaskEvent(eq("STATISTIC-TOPIC"), any(TaskEvent.class));
+    }
+
+    @Test
+    void getTaskById_taskExists() {
+        UUID taskId = UUID.randomUUID();
+        Task task = new Task();
+        task.setId(taskId);
+        ShortTaskDto shortTaskDto = new ShortTaskDto();
+        shortTaskDto.setId(taskId);
+
+        when(taskRepository.findByIdForAdmin(taskId)).thenReturn(Optional.of(task));
+        when(taskMapper.toShortTaskDto(task)).thenReturn(shortTaskDto);
+
+        ShortTaskDto result = taskService.getTaskById(taskId);
+
+        assertNotNull(result);
+        assertEquals(taskId, result.getId());
+        verify(taskRepository, times(1)).findByIdForAdmin(taskId);
+    }
+
+    @Test
+    void getTaskById_taskNotFound() {
+        UUID taskId = UUID.randomUUID();
+
+        when(taskRepository.findByIdForAdmin(taskId)).thenReturn(Optional.empty());
+
+        EntityNotFoundException exception =
+                assertThrows(EntityNotFoundException.class, () -> taskService.getTaskById(taskId));
+
+        assertEquals("Task with ID=" + taskId + " not found", exception.getMessage());
+        verify(taskRepository, times(1)).findByIdForAdmin(taskId);
+    }
+
+    @Test
+    void getUserTaskById_userHasAccess() {
+        UUID userId = UUID.randomUUID();
+        UUID taskId = UUID.randomUUID();
+        Task task = new Task();
+        task.setId(taskId);
+        User author = new User();
+        author.setId(userId);
+        task.setAuthor(author);
+
+        when(taskReadService.getTaskById(taskId)).thenReturn(task);
+        when(taskMapper.toShortTaskDto(task)).thenReturn(new ShortTaskDto());
+
+        ShortTaskDto result = taskService.getUserTaskById(userId, taskId);
+
+        assertNotNull(result);
+        verify(taskReadService, times(1)).getTaskById(taskId);
+    }
+
+    @Test
+    void getUserTaskById_accessDenied() {
+        UUID userId = UUID.randomUUID();
+        UUID taskId = UUID.randomUUID();
+        Task task = new Task();
+        task.setId(taskId);
+        User author = new User();
+        author.setId(UUID.randomUUID());
+        task.setAuthor(author);
+
+        when(taskReadService.getTaskById(taskId)).thenReturn(task);
+
+        assertThrows(AccessDeniedException.class, () -> taskService.getUserTaskById(userId, taskId));
+        verify(taskReadService, times(1)).getTaskById(taskId);
+    }
+
+    @Test
+    void deleteTaskByAdmin_success() {
+        UUID taskId = UUID.randomUUID();
+
+        taskService.deleteTaskByAdmin(taskId);
+
+        verify(taskRepository, times(1)).deleteById(taskId);
+        verify(kafkaSender, times(1)).sendDeletedTaskEvent("STATISTIC-TOPIC", taskId);
+    }
+
+    @Test
+    void getAuthorTasks_success() {
+        UUID authorId = UUID.randomUUID();
+        Task task = new Task();
+        task.setId(UUID.randomUUID());
+
+        when(taskRepository.findAllByAuthorId(eq(authorId), any(), any()))
+                .thenReturn(List.of(task));
+        when(taskMapper.toTaskDto(task)).thenReturn(new TaskDto());
+
+        List<TaskDto> tasks = taskService.getAuthorTasks(authorId, 0, 10, null);
+
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        verify(taskRepository, times(1)).findAllByAuthorId(eq(authorId), any(), any());
+    }
+
+    @Test
+    void getTasksForExecutor_success() {
+        UUID executorId = UUID.randomUUID();
+        Task task = new Task();
+        task.setId(UUID.randomUUID());
+
+        when(taskRepository.findAllByExecutorId(eq(executorId), any(), any()))
+                .thenReturn(List.of(task));
+        when(taskMapper.toTaskDto(task)).thenReturn(new TaskDto());
+
+        List<TaskDto> tasks = taskService.getTasksForExecutor(executorId, 0, 10, null);
+
+        assertNotNull(tasks);
+        assertEquals(1, tasks.size());
+        verify(taskRepository, times(1)).findAllByExecutorId(eq(executorId), any(), any());
+    }
+}

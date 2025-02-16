@@ -130,5 +130,4 @@ public class ErrorHandler {
                 .timestamp(OffsetDateTime.now())
                 .build();
     }
-
 }

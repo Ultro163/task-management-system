@@ -12,11 +12,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 @Configuration
 public class MongoConfig {
 
-//    @Bean
-//    public MongoClient mongoClient() {
-//        return MongoClients.create("mongodb://ultro:163163@localhost:27017");
-//    }
-
     @Bean
     public MongoClient mongoClient() {
         String connectionString = "mongodb://localhost:27017/statistic?authSource=admin";
